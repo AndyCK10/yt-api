@@ -74,6 +74,38 @@ app.get("/", async (req, res) => {
 
 /**
  * @swagger
+ * /short:
+ *  get:
+ *      summary: Retrieve a list of videos.
+ *      responses:
+ *          '200':
+ *              descriItion: A JSON array of videos.
+ */
+app.get("/short", async (req, res) => {
+  //   res.send("Hello andy");
+  const query = `SELECT vl.video_id, vl.video_title, vl.video_url, vl.video_thumbnail, vl.video_created_at, c.channel_id,c.channel_name,c.channel_profile_picture, p.view_count 
+  FROM videos_short vl 
+  JOIN channels c ON vl.channel_id = c.channel_id 
+  JOIN popular p ON vl.video_id = p.video_id;`;
+  try {
+    //     db.query(query, (err, result) => {
+    //       if (err) {
+    //         throw err;
+    //       }
+    //       res.send(result);
+    //     });
+    const [results] = await conn.query(query);
+    res.send(results);
+    // res.json(results);
+  } catch (error) {
+    console.log("error");
+    // res.status(500).json({ error });
+    res.status(500).send("เกิดข้อผิดพลาดในการดึงข้อมูล");
+  }
+});
+
+/**
+ * @swagger
  * /users:
  *  get:
  *      summary: Retrieve a list of users.
@@ -88,6 +120,15 @@ app.get("/users", async (req, res) => {
   res.send(results);
 });
 
+/**
+ * @swagger
+ * /subscribe:
+ *  get:
+ *      summary: Retrieve a list of subscribes.
+ *      responses:
+ *          '200':
+ *              description: A JSON array of users.
+ */
 app.get('/subscribe', async (req, res) => {
     const user_id = req.query.user_id
     if (!user_id) {
@@ -132,7 +173,7 @@ app.get('/subscribe', async (req, res) => {
 app.get("/result", async (req, res) => {
   const { search_query } = req.query;
   const query = `
-    SELECT vl.video_id, vl.video_title, vl.video_created_at, vl.video_thumbnail, c.channel_name, c.channel_profile_picture, p.view_count 
+    SELECT vl.video_id, vl.video_title, vl.video_created_at, vl.video_thumbnail, vl.video_description, c.channel_name, c.channel_profile_picture, p.view_count 
     FROM videos_long vl 
     JOIN channels c ON vl.channel_id = c.channel_id 
     JOIN popular p ON vl.video_id = p.video_id
