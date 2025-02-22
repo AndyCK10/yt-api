@@ -34,14 +34,27 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // };
 
 let conn = null;
+// const initMySQL = async () => {
+//   conn = await mysql.createConnection({
+//     host: process.env.TIDB_HOST,
+//     port: process.env.TIDB_PORT,
+//     user: process.env.TIDB_USER,
+//     password: process.env.TIDB_PASSWORD,
+//     database: process.env.TIDB_DATABASE,
+//     ssl: process.env.TIDB_ENABLE_SSL === 'true' ? {
+//       minVersion: 'TLSv1.2',
+//       ca: process.env.TIDB_CA_PATH ? fs.readFileSync(process.env.TIDB_CA_PATH) : undefined
+//     } : null,
+//   });
+// };
 const initMySQL = async () => {
   conn = await mysql.createConnection({
-    host: process.env.TIDB_HOST,
-    port: process.env.TIDB_PORT,
-    user: process.env.TIDB_USER,
-    password: process.env.TIDB_PASSWORD,
-    database: process.env.TIDB_DATABASE,
-    ssl: process.env.TIDB_ENABLE_SSL === 'true' ? {
+    host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    port: '4000',
+    user: '39br63ssHLaLLd8.root',
+    password: '5CoUFtdp8jQXghv7',
+    database: 'youtube_db',
+    ssl: 'true' === 'true' ? {
       minVersion: 'TLSv1.2',
       ca: process.env.TIDB_CA_PATH ? fs.readFileSync(process.env.TIDB_CA_PATH) : undefined
     } : null,
