@@ -22,14 +22,29 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 //   port: process.env.DB_PORT,
 // });
 
+// let conn = null;
+// const initMySQL = async () => {
+//   conn = await mysql.createConnection({
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USERNAME,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_DATABASE,
+//     port: process.env.DB_PORT,
+//   });
+// };
+
 let conn = null;
 const initMySQL = async () => {
   conn = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT,
+    host: process.env.TIDB_HOST,
+    port: process.env.TIDB_PORT,
+    user: process.env.TIDB_USER,
+    password: process.env.TIDB_PASSWORD,
+    database: process.env.TIDB_DATABASE,
+    ssl: process.env.TIDB_ENABLE_SSL === 'true' ? {
+      minVersion: 'TLSv1.2',
+      ca: process.env.TIDB_CA_PATH ? fs.readFileSync(process.env.TIDB_CA_PATH) : undefined
+    } : null,
   });
 };
 
@@ -63,6 +78,7 @@ app.get("/", async (req, res) => {
     //       res.send(result);
     //     });
     const [results] = await conn.query(query);
+    // const [results] = await promisePool.query(query);
     res.send(results);
     // res.json(results);
   } catch (error) {
@@ -95,6 +111,7 @@ app.get("/short", async (req, res) => {
     //       res.send(result);
     //     });
     const [results] = await conn.query(query);
+    // const [results] = await promisePool.query(query);
     res.send(results);
     // res.json(results);
   } catch (error) {
@@ -115,6 +132,7 @@ app.get("/short", async (req, res) => {
  */
 app.get("/users", async (req, res) => {
   const [results] = await conn.query("SELECT * FROM `users`");
+  // const [results] = await promisePool.query("SELECT * FROM `users`");
   // console.log(results);
   // res.json(results)
   res.send(results);
@@ -145,6 +163,7 @@ app.get('/subscribe', async (req, res) => {
 
     try {
         const [result] = await conn.query(query, [
+        // const [result] = await promisePool.query(query, [
           `%${user_id}%`,
           `%${user_id}%`,
         ]);
@@ -181,6 +200,7 @@ app.get("/result", async (req, res) => {
     `;
   try {
     const [result] = await conn.query(query, [
+    // const [result] = await promisePool.query(query, [
       `%${search_query}%`,
       `%${search_query}%`,
     ]);
@@ -239,6 +259,7 @@ app.get("/watch", async (req, res) => {
     `;
   try {
     const [results] = await conn.query(query, [v, v], (err, result) => {
+    // const [results] = await promisePool.query(query, [v, v], (err, result) => {
       //   const video = result[0];
       //   const comments = video.comments.split("\n").map((comment) => {
       //     const [username, content] = comment.split(": ");
